@@ -58,7 +58,7 @@ export default {
           console.log(status)
           if (status === 200) {
             localStorage.setItem('token', token)
-            this.$router.push('/user')
+            this.$router.push('/index')
           }
         } else {
           console.log('error submit!!')
