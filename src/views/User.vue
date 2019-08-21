@@ -3,8 +3,10 @@
     <!-- input框和添加按钮 -->
     <div class="search">
       <el-input v-model="input" placeholder="请输入内容"></el-input>
-      <el-button icon="el-icon-search"></el-button>
+      <el-button icon="el-icon-search" @click="search"></el-button>
+      <el-button type="success" plain @click="addDialogVisible = true">添加用户</el-button>
     </div>
+
     <!-- 表格 -->
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="username" label="姓名" width="180"></el-table-column>
@@ -23,6 +25,28 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 添加用户模态框 -->
+    <el-dialog title="添加用户" :visible.sync="addDialogVisible">
+      <el-form :model="addForm" :rules="rules" ref="addForm">
+        <el-form-item label="用户名" :label-width="formLabelWidth" size="medium " prop="username">
+          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" :label-width="formLabelWidth" prop="password">
+          <el-input v-model="addForm.password" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="addForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" :label-width="formLabelWidth">
+          <el-input v-model="addForm.telphone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -32,7 +56,28 @@ export default {
       // input框数据
       input: '',
       // 表格数据
-      tableData: []
+      tableData: [],
+      // 添加用户对话框
+      addDialogVisible: false,
+      // 添加用户对话框数据
+      addForm: {
+        username: '',
+        password: '',
+        telephone: '',
+        email: ''
+      },
+      // 添加用户对话框效验规则
+      rules: {
+        username: [
+          { required: true, message: '请输入正确的用户名', trigger: 'blur' },
+          { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入正确的密码', trigger: 'blur' },
+          { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
+        ]
+      },
+      formLabelWidth: '60px'
     }
   },
   methods: {
@@ -42,9 +87,11 @@ export default {
     handleDelete (index, row) {
       console.log(index, row)
     },
-    async getTableData () {
+    // 拿表格数据的方法
+    async getTableData (query) {
       let res = await this.axios.get('users', {
         params: {
+          query,
           pagenum: 1,
           pagesize: 2
         }
@@ -59,6 +106,27 @@ export default {
         this.tableData = users
       }
       console.log(this.tableData)
+    },
+    // 查询搜索的方法
+    search () {
+      this.getTableData(this.input)
+    },
+    // 添加用户时展示对话框的方法
+    submitForm (formName) {
+      console.log(formName)
+      this.$refs[formName].validate(async valid => {
+        if (valid) {
+          // 验证通过了发送ajax
+          let res = await this.axios.post('users', {
+            username: this.addForm.username,
+            password: this.addForm.password,
+            mpbile: this.addForm.telephone,
+            email: this.addForm.email
+          })
+          console.log(res)
+          this.getTableData()
+        }
+      })
     }
   },
   created () {
@@ -67,10 +135,13 @@ export default {
 }
 </script>
 <style lang="less" scoped>
-.search{
-  margin:10px 0
+.search {
+  margin: 10px 0;
 }
 .el-input {
   width: 30%;
+}
+.el-form-item__content .el-input {
+  width: 100%;
 }
 </style>
