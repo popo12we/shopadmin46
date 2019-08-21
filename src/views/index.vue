@@ -6,13 +6,12 @@
     <el-container>
       <el-aside width="200px">
         <el-menu
-          default-active="2"
           class="el-menu-vertical-demo menu"
-          @open="handleOpen"
-          @close="handleClose"
           background-color="#545c64"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#abcdef"
+          :default-active="activeIndex"
+          @select="handleSelect"
           router
         >
           <el-submenu index="1">
@@ -74,12 +73,14 @@
 
 <script>
 export default {
+  data () {
+    return {
+      activeIndex: '1'
+    }
+  },
   methods: {
-    handleOpen (key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleClose (key, keyPath) {
-      console.log(key, keyPath)
+    handleSelect (key, keyPath) {
+      this.activeIndex = keyPath[1]
     }
   }
 }
@@ -88,10 +89,10 @@ export default {
 .index {
   height: 100%;
 }
-.el-container{
+.el-container {
   height: 100%;
 }
-/deep/ .el-aside{
+/deep/ .el-aside {
   overflow: hidden;
   height: 100%;
 }
