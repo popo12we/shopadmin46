@@ -1,7 +1,11 @@
 <template>
   <div class="index">
     <div class="topnav">
-      <h1>电商后台管理系统</h1>
+      <h1 class="title">电商后台管理系统</h1>
+      <div class="logout">
+        欢迎你，xxx
+        <a @click="logout" href="javascript:;">退出</a>
+      </div>
     </div>
     <el-container>
       <el-aside width="200px">
@@ -79,8 +83,14 @@ export default {
     }
   },
   methods: {
+    // 点左侧谁高亮
     handleSelect (key, keyPath) {
       this.activeIndex = keyPath[1]
+    },
+    // 退出
+    logout () {
+      localStorage.removeItem('token')
+      this.$router.push('/login')
     }
   }
 }
@@ -99,10 +109,20 @@ export default {
 .topnav {
   height: 60px;
   background-color: #b3c1cd;
+  position: relative;
   h1 {
     text-align: center;
     line-height: 60px;
     color: #fff;
+    width: 50%;
+    margin: 0 auto;
+    position: absolute;
+    left: 50%;
+    transform:translateX(-50%)
+  }
+  .logout{
+    float: right;
+    margin-top:25px;
   }
 }
 .menu {

@@ -1,13 +1,16 @@
 <template>
   <div class="user">
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="date" label="日期" width="180"></el-table-column>
-      <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-      <el-table-column prop="address" label="地址"></el-table-column>
-      <el-table-column prop="address" label="地址">
-        <el-switch active-color="#cccccc" inactive-color="#ee3322"></el-switch>
+      <el-table-column prop="username" label="姓名" width="180"></el-table-column>
+      <el-table-column prop="email" label="邮箱"></el-table-column>
+      <el-table-column prop="mobile" label="电话"></el-table-column>
+      <el-table-column prop="mg_state" label="用户状态">
+        <template slot-scope="scope">
+        <!-- {{scope}} -->
+        <el-switch  v-model="scope.row.mg_state" active-color="green" inactive-color="red"></el-switch>
+        </template>
       </el-table-column>
-      <el-table-column prop="address" label="地址">
+      <el-table-column prop="address" label="操作">
         <template slot-scope="scope">
           <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -20,28 +23,8 @@
 export default {
   data () {
     return {
-      tableData: [
-        {
-          date: '2016-05-02',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1518 弄'
-        },
-        {
-          date: '2016-05-04',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1517 弄'
-        },
-        {
-          date: '2016-05-01',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1519 弄'
-        },
-        {
-          date: '2016-05-03',
-          name: '王小虎',
-          address: '上海市普陀区金沙江路 1516 弄'
-        }
-      ]
+      // 表格数据
+      tableData: []
     }
   },
   methods: {
@@ -50,7 +33,23 @@ export default {
     },
     handleDelete (index, row) {
       console.log(index, row)
+    },
+    async getTableData () {
+      let res = await this.axios.get('users', {
+        params: {
+          pagenum: 1,
+          pagesize: 2
+        }
+      })
+      let { data: { data: { users } }, status } = res
+      if (status === 200) {
+        this.tableData = users
+      }
+      console.log(this.tableData)
     }
+  },
+  created () {
+    this.getTableData()
   }
 }
 </script>
