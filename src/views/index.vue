@@ -4,7 +4,7 @@
       <h1 class="title">电商后台管理系统</h1>
       <div class="logout">
         欢迎你，xxx
-        <a @click="logout" href="javascript:;">退出</a>
+        <a @click="open2" href="javascript:;">退出</a>
       </div>
     </div>
     <el-container>
@@ -87,11 +87,29 @@ export default {
     handleSelect (key, keyPath) {
       this.activeIndex = keyPath[1]
     },
-    // 退出
-    logout () {
-      localStorage.removeItem('token')
-      this.$router.push('/login')
+    // 点击退出出现模态框
+    open2 () {
+      this.$confirm('确定要退出吗', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          localStorage.removeItem('token')
+          this.$router.push('/login')
+          this.$message({
+            type: 'success',
+            message: '退出成功!'
+          })
+        })
+        .catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消'
+          })
+        })
     }
+
   }
 }
 </script>
@@ -118,15 +136,18 @@ export default {
     margin: 0 auto;
     position: absolute;
     left: 50%;
-    transform:translateX(-50%)
+    transform: translateX(-50%);
   }
-  .logout{
+  .logout {
     float: right;
-    margin-top:25px;
+    margin-top: 25px;
   }
 }
 .menu {
   width: 200px;
   height: 100%;
+}
+.el-main{
+      background-color: #eaeef1;
 }
 </style>

@@ -1,13 +1,19 @@
 <template>
   <div class="user">
+    <!-- input框和添加按钮 -->
+    <div class="search">
+      <el-input v-model="input" placeholder="请输入内容"></el-input>
+      <el-button icon="el-icon-search"></el-button>
+    </div>
+    <!-- 表格 -->
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="username" label="姓名" width="180"></el-table-column>
       <el-table-column prop="email" label="邮箱"></el-table-column>
       <el-table-column prop="mobile" label="电话"></el-table-column>
       <el-table-column prop="mg_state" label="用户状态">
         <template slot-scope="scope">
-        <!-- {{scope}} -->
-        <el-switch  v-model="scope.row.mg_state" active-color="green" inactive-color="red"></el-switch>
+          <!-- {{scope}} -->
+          <el-switch v-model="scope.row.mg_state" active-color="green" inactive-color="red"></el-switch>
         </template>
       </el-table-column>
       <el-table-column prop="address" label="操作">
@@ -23,6 +29,8 @@
 export default {
   data () {
     return {
+      // input框数据
+      input: '',
       // 表格数据
       tableData: []
     }
@@ -41,7 +49,12 @@ export default {
           pagesize: 2
         }
       })
-      let { data: { data: { users } }, status } = res
+      let {
+        data: {
+          data: { users }
+        },
+        status
+      } = res
       if (status === 200) {
         this.tableData = users
       }
@@ -54,4 +67,10 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.search{
+  margin:10px 0
+}
+.el-input {
+  width: 30%;
+}
 </style>
