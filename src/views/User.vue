@@ -1,5 +1,6 @@
 <template>
-  <div class="home">
+  <div class="user">
+    用户组件
   </div>
 </template>
 
