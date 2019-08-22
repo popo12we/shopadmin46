@@ -148,6 +148,7 @@ export default {
   height: 100%;
 }
 .el-main{
+      padding:25px;
       background-color: #eaeef1;
 }
 </style>
