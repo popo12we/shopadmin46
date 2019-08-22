@@ -15,7 +15,12 @@
       <el-table-column prop="mg_state" label="用户状态">
         <template slot-scope="scope">
           <!-- {{scope}} -->
-          <el-switch v-model="scope.row.mg_state" active-color="green" inactive-color="red"></el-switch>
+          <el-switch
+            v-model="scope.row.mg_state"
+            @change="changeswitch(scope.row)"
+            active-color="green"
+            inactive-color="red"
+          ></el-switch>
         </template>
       </el-table-column>
       <el-table-column prop="address" label="操作">
@@ -243,6 +248,22 @@ export default {
           }
         }
       })
+    },
+
+    // 按下开关改变状态
+    async changeswitch (row) {
+      console.log(row)
+      let uId = row.id
+      let type = row.mg_state
+      let res = await this.axios.put(`users/${uId}/state/${type}`)
+      let {
+        data: {
+          meta: { status }
+        }
+      } = res
+      if (status === 200) {
+        this.getTableData()
+      }
     }
   },
 

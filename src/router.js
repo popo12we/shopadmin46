@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Index from './views/index.vue'
 import Login from './views/login.vue'
 import User from './views/user.vue'
+import Roles from './views/roles'
 Vue.use(Router)
 
 const router = new Router({
@@ -26,6 +27,11 @@ const router = new Router({
           path: '/index/user',
           name: 'user',
           component: User
+        },
+        {
+          path: '/index/roles',
+          name: 'roles',
+          component: Roles
         }
       ]
     }
