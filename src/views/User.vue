@@ -73,9 +73,9 @@
     <el-dialog title="修改用户" :visible.sync="editUserDialogVisible">
       <el-form :model="editUserForm" :rules="editUserrules" ref="editUserForm">
         <el-form-item label="用户名" :label-width="formLabelWidth" size="medium " prop="username">
-          <el-input v-model="editUserForm.username" autocomplete="off"></el-input>
+          <el-button type="primary" plain disabled>{{editUserForm.username}}</el-button>
         </el-form-item>
-        <el-form-item label="邮箱" :label-width="formLabelWidth">
+        <el-form-item label="邮箱" :label-width="formLabelWidth" prop="email">
           <el-input v-model="editUserForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机" :label-width="formLabelWidth">
@@ -84,7 +84,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editUserDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitEditUserForm('editForm')">确 定</el-button>
+        <el-button type="primary" @click="submitEditUserForm('editUserForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -135,7 +135,16 @@ export default {
         email: '',
         telephone: ''
       },
-      editUserrules: {},
+      editUserrules: {
+        email: [
+          { required: true, message: '请输入邮箱地址', trigger: 'blur' },
+          {
+            type: 'email',
+            message: '请输入正确的邮箱地址',
+            trigger: ['blur', 'change']
+          }
+        ]
+      },
       formLabelWidth: '100px'
     }
   },
@@ -196,7 +205,6 @@ export default {
     // 展示用户修改框
     async edituserDialogShow (row) {
       this.editUserDialogVisible = true
-
       let res = await this.axios.get(`users/${row.id}`)
       console.log(res)
       let {
@@ -213,28 +221,31 @@ export default {
         this.editUserForm.email = email
       }
     },
-
     // 点击确定修改用户
-    async submitEditUserForm () {
+    submitEditUserForm (formName) {
       // console.log(this.editUserForm.uid)
-      let res = await this.axios.put(`users/${this.editUserForm.uid}`, {
-        mobile: this.editUserForm.telephone,
-        email: this.editUserForm.email
-
-      })
-      console.log(res)
-      let {
-        data: {
-          meta: { status }
+      this.$refs[formName].validate(async valid => {
+        if (valid) {
+          let res = await this.axios.put(`users/${this.editUserForm.uid}`, {
+            mobile: this.editUserForm.telephone,
+            email: this.editUserForm.email
+          })
+          console.log(res)
+          let {
+            data: {
+              meta: { status }
+            }
+          } = res
+          // this.editUserDialogVisible = false;
+          if (status === 200) {
+            this.editUserDialogVisible = false
+            this.getTableData()
+          }
         }
-      } = res
-      // this.editUserDialogVisible = false;
-      if (status === 200) {
-        this.editUserDialogVisible = false
-        this.getTableData()
-      }
+      })
     }
   },
+
   created () {
     this.getTableData()
   }
