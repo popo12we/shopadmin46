@@ -26,6 +26,16 @@
       </el-table-column>
     </el-table>
 
+    <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :page-sizes="[2, 4, 6]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+    ></el-pagination>
+
     <!-- 添加用户模态框 -->
     <el-dialog title="添加用户" :visible.sync="addDialogVisible">
       <el-form :model="addForm" :rules="rules" ref="addForm">
@@ -59,6 +69,14 @@ export default {
       tableData: [],
       // 添加用户对话框
       addDialogVisible: false,
+      // 分页数据
+      // 表格总数据条数
+      total: 0,
+      // 每页显示条数
+      pagesize: 2,
+      // 分页当前页
+      pagenum: 1,
+
       // 添加用户对话框数据
       addForm: {
         username: '',
@@ -77,35 +95,29 @@ export default {
           { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
         ]
       },
-      formLabelWidth: '60px'
+      formLabelWidth: '100px'
     }
   },
   methods: {
-    handleEdit (index, row) {
-      console.log(index, row)
-    },
-    handleDelete (index, row) {
-      console.log(index, row)
-    },
     // 拿表格数据的方法
     async getTableData (query) {
       let res = await this.axios.get('users', {
         params: {
           query,
-          pagenum: 1,
-          pagesize: 2
+          pagenum: this.pagenum,
+          pagesize: this.pagesize
         }
       })
       let {
         data: {
-          data: { users }
+          data: { users, total }
         },
         status
       } = res
       if (status === 200) {
         this.tableData = users
+        this.total = total
       }
-      console.log(this.tableData)
     },
     // 查询搜索的方法
     search () {
@@ -113,7 +125,6 @@ export default {
     },
     // 添加用户时展示对话框的方法
     submitForm (formName) {
-      console.log(formName)
       this.$refs[formName].validate(async valid => {
         if (valid) {
           // 验证通过了发送ajax
@@ -123,10 +134,24 @@ export default {
             mpbile: this.addForm.telephone,
             email: this.addForm.email
           })
-          console.log(res)
-          this.getTableData()
+          let { status } = res
+          if (status === 200) {
+            this.addDialogVisible = false
+            this.getTableData()
+          }
         }
       })
+    },
+    // 分页假方法
+    handleSizeChange (val) {
+      this.pagesize = val
+
+      this.getTableData()
+    },
+    // 切换分页页码
+    handleCurrentChange (val) {
+      this.pagenum = val
+      this.getTableData()
     }
   },
   created () {
