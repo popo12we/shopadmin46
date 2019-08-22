@@ -29,8 +29,9 @@
             circle
             plain
             size="mini"
-            @click="editUserDialogVisible = true"
+            @click="edituserDialogShow(scope.row)"
           ></el-button>
+          <!--  -->
           <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -70,20 +71,20 @@
 
     <!-- 修改用户模态框 -->
     <el-dialog title="修改用户" :visible.sync="editUserDialogVisible">
-      <el-form :model="addForm" :rules="rules" ref="addForm">
+      <el-form :model="editUserForm" :rules="editUserrules" ref="editUserForm">
         <el-form-item label="用户名" :label-width="formLabelWidth" size="medium " prop="username">
-          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+          <el-input v-model="editUserForm.username" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮箱" :label-width="formLabelWidth">
-          <el-input v-model="addForm.email" autocomplete="off"></el-input>
+          <el-input v-model="editUserForm.email" autocomplete="off"></el-input>
         </el-form-item>
         <el-form-item label="手机" :label-width="formLabelWidth">
-          <el-input v-model="addForm.telphone" autocomplete="off"></el-input>
+          <el-input v-model="editUserForm.telephone" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
+        <el-button @click="editUserDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitEditUserForm('editForm')">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -126,6 +127,15 @@ export default {
           { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
         ]
       },
+
+      editUserForm: {
+        // 用户id
+        uId: '',
+        username: '',
+        email: '',
+        telephone: ''
+      },
+      editUserrules: {},
       formLabelWidth: '100px'
     }
   },
@@ -173,16 +183,56 @@ export default {
         }
       })
     },
-    // 分页假方法
+    // 分页每页展示多少条
     handleSizeChange (val) {
       this.pagesize = val
-
       this.getTableData()
     },
     // 切换分页页码
     handleCurrentChange (val) {
       this.pagenum = val
       this.getTableData()
+    },
+    // 展示用户修改框
+    async edituserDialogShow (row) {
+      this.editUserDialogVisible = true
+
+      let res = await this.axios.get(`users/${row.id}`)
+      console.log(res)
+      let {
+        data: {
+          data: { id, username, mobile, email },
+          meta: { status }
+        }
+      } = res
+      if (status === 200) {
+        // 回显数据
+        this.editUserForm.uid = id
+        this.editUserForm.username = username
+        this.editUserForm.telephone = mobile
+        this.editUserForm.email = email
+      }
+    },
+
+    // 点击确定修改用户
+    async submitEditUserForm () {
+      // console.log(this.editUserForm.uid)
+      let res = await this.axios.put(`users/${this.editUserForm.uid}`, {
+        mobile: this.editUserForm.telephone,
+        email: this.editUserForm.email
+
+      })
+      console.log(res)
+      let {
+        data: {
+          meta: { status }
+        }
+      } = res
+      // this.editUserDialogVisible = false;
+      if (status === 200) {
+        this.editUserDialogVisible = false
+        this.getTableData()
+      }
     }
   },
   created () {
