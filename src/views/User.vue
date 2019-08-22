@@ -20,7 +20,17 @@
       </el-table-column>
       <el-table-column prop="address" label="操作">
         <template slot-scope="scope">
-          <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button>
+          <!-- <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
+
+          <!-- 修改编辑按钮 -->
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            circle
+            plain
+            size="mini"
+            @click="editUserDialogVisible = true"
+          ></el-button>
           <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
@@ -57,6 +67,25 @@
         <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 修改用户模态框 -->
+    <el-dialog title="修改用户" :visible.sync="editUserDialogVisible">
+      <el-form :model="addForm" :rules="rules" ref="addForm">
+        <el-form-item label="用户名" :label-width="formLabelWidth" size="medium " prop="username">
+          <el-input v-model="addForm.username" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱" :label-width="formLabelWidth">
+          <el-input v-model="addForm.email" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" :label-width="formLabelWidth">
+          <el-input v-model="addForm.telphone" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -69,6 +98,8 @@ export default {
       tableData: [],
       // 添加用户对话框
       addDialogVisible: false,
+      // 修改用户对话框
+      editUserDialogVisible: false,
       // 分页数据
       // 表格总数据条数
       total: 0,
