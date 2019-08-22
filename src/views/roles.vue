@@ -32,7 +32,18 @@
       </el-table-column>
       <el-table-column label="角色名称" prop="roleName"></el-table-column>
       <el-table-column label="描述" prop="roleDesc"></el-table-column>
-      <el-table-column label="操作" prop="desc"></el-table-column>
+      <el-table-column label="操作" prop="desc">
+
+          <el-button
+            round
+            icon="el-icon-edit"
+            size="mini"
+            type="success"
+            plain
+            @click="showTreeDialog"
+          >分配角色</el-button>
+
+      </el-table-column>
     </el-table>
 
     <!-- 添加用户模态框 -->
@@ -49,6 +60,19 @@
         <el-button @click="editDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="submitForm('addForm')">确 定</el-button>
       </div>
+    </el-dialog>
+
+    <!-- 树形结构 -->
+    <el-dialog title="分配权限" :visible.sync="treeDialogVisible">
+      <el-tree
+        :data="rightList"
+        show-checkbox
+        default-expand-all
+        node-key="id"
+        ref="tree"
+        highlight-current
+        :props="defaultProps"
+      ></el-tree>
     </el-dialog>
   </div>
 </template>
@@ -94,7 +118,15 @@ export default {
           { min: 3, max: 6, message: '长度在 3 到 6 个字符', trigger: 'blur' }
         ]
       },
-      formLabelWidth: '120px'
+      formLabelWidth: '120px',
+      // 树形图对话框是否显示
+      treeDialogVisible: false,
+      // 权限数据
+      rightList: [],
+      defaultProps: {
+        children: 'children',
+        label: 'authName'
+      }
     }
   },
 
@@ -139,6 +171,41 @@ export default {
           }
         }
       })
+    },
+
+    // 显示出树形图对话框
+    async showTreeDialog () {
+      this.treeDialogVisible = true
+      const { data: { meta, data } } = await this.axios.get('rights/tree')
+      if (meta.status === 200) {
+        this.rightList = data
+        console.log(this.rightList)
+      }
+    },
+
+    getCheckedNodes () {
+      console.log(this.$refs.tree.getCheckedNodes())
+    },
+    getCheckedKeys () {
+      console.log(this.$refs.tree.getCheckedKeys())
+    },
+    setCheckedNodes () {
+      this.$refs.tree.setCheckedNodes([
+        {
+          id: 5,
+          label: '二级 2-1'
+        },
+        {
+          id: 9,
+          label: '三级 1-1-1'
+        }
+      ])
+    },
+    setCheckedKeys () {
+      this.$refs.tree.setCheckedKeys([3])
+    },
+    resetChecked () {
+      this.$refs.tree.setCheckedKeys([])
     }
   },
 
