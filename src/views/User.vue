@@ -25,7 +25,6 @@
       </el-table-column>
       <el-table-column prop="address" label="操作">
         <template slot-scope="scope">
-          <!-- <el-button size="mini" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
 
           <!-- 修改编辑按钮 -->
           <el-button
@@ -211,7 +210,7 @@ export default {
     async edituserDialogShow (row) {
       this.editUserDialogVisible = true
       let res = await this.axios.get(`users/${row.id}`)
-      console.log(res)
+
       let {
         data: {
           data: { id, username, mobile, email },
@@ -228,14 +227,13 @@ export default {
     },
     // 点击确定修改用户
     submitEditUserForm (formName) {
-      // console.log(this.editUserForm.uid)
       this.$refs[formName].validate(async valid => {
         if (valid) {
           let res = await this.axios.put(`users/${this.editUserForm.uid}`, {
             mobile: this.editUserForm.telephone,
             email: this.editUserForm.email
           })
-          console.log(res)
+
           let {
             data: {
               meta: { status }
@@ -252,7 +250,6 @@ export default {
 
     // 按下开关改变状态
     async changeswitch (row) {
-      console.log(row)
       let uId = row.id
       let type = row.mg_state
       let res = await this.axios.put(`users/${uId}/state/${type}`)

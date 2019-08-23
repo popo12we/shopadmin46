@@ -4,6 +4,7 @@ import Index from './views/index.vue'
 import Login from './views/login.vue'
 import User from './views/user.vue'
 import Roles from './views/roles'
+import Categroy from './views/categroy'
 Vue.use(Router)
 
 const router = new Router({
@@ -32,6 +33,11 @@ const router = new Router({
           path: '/index/roles',
           name: 'roles',
           component: Roles
+        },
+        {
+          path: '/index/categroy',
+          name: 'categroy',
+          component: Categroy
         }
       ]
     }

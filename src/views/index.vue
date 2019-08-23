@@ -45,7 +45,13 @@
               <span>商品管理</span>
             </template>
             <el-menu-item index="3-1">
-              <i class="el-icon-menu"></i>选项1
+              <i class="el-icon-menu"></i>商品列表
+            </el-menu-item>
+            <el-menu-item index="3-2">
+              <i class="el-icon-menu"></i>分类参数
+            </el-menu-item>
+            <el-menu-item index="/index/categroy">
+              <i class="el-icon-menu"></i>商品分类
             </el-menu-item>
           </el-submenu>
           <el-submenu index="4">
@@ -109,7 +115,6 @@ export default {
           })
         })
     }
-
   }
 }
 </script>
@@ -147,8 +152,8 @@ export default {
   width: 200px;
   height: 100%;
 }
-.el-main{
-      padding:25px;
-      background-color: #eaeef1;
+.el-main {
+  padding: 25px;
+  background-color: #eaeef1;
 }
 </style>

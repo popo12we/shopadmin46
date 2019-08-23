@@ -33,16 +33,16 @@
       <el-table-column label="角色名称" prop="roleName"></el-table-column>
       <el-table-column label="描述" prop="roleDesc"></el-table-column>
       <el-table-column label="操作" prop="desc">
-
+        <template v-slot:default="{ row }">
           <el-button
             round
             icon="el-icon-edit"
             size="mini"
             type="success"
             plain
-            @click="showTreeDialog"
+            @click="showTreeDialog(row)"
           >分配角色</el-button>
-
+        </template>
       </el-table-column>
     </el-table>
 
@@ -73,7 +73,12 @@
         highlight-current
         :props="defaultProps"
       ></el-tree>
+       <span slot="footer" class="dialog-footer">
+      <el-button @click="assignVisible = false">取 消</el-button>
+      <el-button type="primary" @click="assignRight">确 定</el-button>
+    </span>
     </el-dialog>
+
   </div>
 </template>
 
@@ -123,6 +128,7 @@ export default {
       treeDialogVisible: false,
       // 权限数据
       rightList: [],
+      roleId: 0,
       defaultProps: {
         children: 'children',
         label: 'authName'
@@ -142,7 +148,6 @@ export default {
       } = res
       if (status === 200) {
         this.tableData = data
-        console.log(this.tableData)
       }
     },
 
@@ -164,7 +169,7 @@ export default {
               meta: { status }
             }
           } = res
-          console.log(status)
+
           if (status === 201) {
             this.editDialogVisible = false
             this.getRolesData()
@@ -174,38 +179,38 @@ export default {
     },
 
     // 显示出树形图对话框
-    async showTreeDialog () {
+    async showTreeDialog (row) {
+      this.roleId = row.id
       this.treeDialogVisible = true
-      const { data: { meta, data } } = await this.axios.get('rights/tree')
+      const {
+        data: { meta, data }
+      } = await this.axios.get('rights/tree')
       if (meta.status === 200) {
         this.rightList = data
-        console.log(this.rightList)
+
+        let ids = []
+        // 使用ids数组把所有的3级的权限的id存储起来
+        row.children.forEach(l1 => {
+          l1.children.forEach(l2 => {
+            l2.children.forEach(l3 => {
+              ids.push(l3.id)
+            })
+          })
+        })
+        this.$refs.tree.setCheckedKeys(ids)
       }
     },
-
-    getCheckedNodes () {
-      console.log(this.$refs.tree.getCheckedNodes())
-    },
-    getCheckedKeys () {
-      console.log(this.$refs.tree.getCheckedKeys())
-    },
-    setCheckedNodes () {
-      this.$refs.tree.setCheckedNodes([
-        {
-          id: 5,
-          label: '二级 2-1'
-        },
-        {
-          id: 9,
-          label: '三级 1-1-1'
-        }
-      ])
-    },
-    setCheckedKeys () {
-      this.$refs.tree.setCheckedKeys([3])
-    },
-    resetChecked () {
-      this.$refs.tree.setCheckedKeys([])
+    // 分配权限
+    async assignRight () {
+      let rids = this.$refs.tree.getCheckedKeys()
+      let hrefrids = this.$refs.tree.getHalfCheckedKeys()
+      rids = [...rids, ...hrefrids]
+      rids = rids.join()
+      await this.axios.post(`roles/${this.roleId}/rights`, {
+        rids
+      })
+      this.treeDialogVisible = false
+      this.getRolesData()
     }
   },
 
